@@ -32,8 +32,26 @@ Aus dem jeweiligen Modellordner heraus ausführen:
 
 ```bash
 cd schnalle
-./export-EU-Schnalle-backplate.sh
+./export-EU-Schnalle-backplate.sh                                  # Standard: 0,4 mm/Lage
+./export-EU-Schnalle-backplate.sh 0.2 EU-Schnalle-backplate-0.2mm.3mf  # Variante
 ```
+
+Das Skript nimmt zwei optionale Argumente:
+
+| Arg | Bedeutung | Default |
+|-----|-----------|---------|
+| `$1` | Lagenhöhe `height` in mm | `0.4` |
+| `$2` | Ausgabedatei | `EU-Schnalle-backplate.3mf` |
+
+Die Gesamtdicke ist `(plain_layer_count + 1) * height`, bei den 5+1 Lagen also
+~2,4 mm (0,4) bzw. ~1,2 mm (0,2). Durchmesser und Schlitzbreite bleiben über
+alle Varianten gleich; nur die Dicke wird über die Lagenhöhe variiert. Die
+Logo-Gravurtiefe `logo_engrave_depth` koppelt das Skript an `height`, damit das
+Logo unabhängig von der Lagenhöhe genau die unterste Lage durchschneidet.
+
+**Achtung Reload-from-disk:** Die kanonische `EU-Schnalle-backplate.3mf` (0,4 mm)
+nicht umbenennen — von Hand in PrusaSlicer abgeleitete Mehrfach-Platten
+referenzieren sie über diesen Dateinamen.
 
 Ablauf des Skripts:
 
