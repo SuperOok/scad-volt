@@ -1,0 +1,3 @@
+= OpenSCAD Models for Volt
+
+Here you can find differen OpenSCAD Models for 3D-printing. They can be easily parametrized via OpenSCAD https://openscad.org/ . 
