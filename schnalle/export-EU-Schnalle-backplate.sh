@@ -85,6 +85,24 @@ star_stls = [Path(path) for path in sys.argv[star_start:]]
 
 clock_labels = ["12 Uhr"] + [f"{hour:02d} Uhr" for hour in range(1, 12)]
 
+# Manuelle 5-Farben-Zuordnung aus den PrusaSlicer-Platten (1-basierte Extruder):
+#   Extruder -> Farbe siehe `materials` weiter unten (E1..E5).
+# ACHTUNG: Diese Listen sind auf 5 Basislagen / 10 Streifen / 12 Sterne
+# zugeschnitten. Werden im .scad die Anzahlen geaendert, hier mitpflegen.
+layer_extruders = [5, 2, 1, 3, 4]                       # Basislage 01..05
+strip_extruders = [3, 3, 1, 1, 2, 2, 4, 4, 5, 5]        # Lage-06 Streifen 01..10
+star_extruders = [5, 1, 2, 3, 2, 1, 5, 3, 4, 5, 4, 3]   # Stern 01..12 (Uhrposition)
+
+
+def material_for(extruders, index, group):
+    """1-basierte Extrudernummer -> 0-basierter Material-Index, mit Fallback."""
+    if index < len(extruders):
+        return extruders[index] - 1
+    print(f"WARNUNG: keine Farbzuordnung fuer {group} #{index + 1}, "
+          f"nutze Material 0.", file=sys.stderr)
+    return 0
+
+
 parts = []
 
 for index, layer_stl in enumerate(layer_stls):
@@ -95,7 +113,7 @@ for index, layer_stl in enumerate(layer_stls):
             "name": f"EU-Schnalle Lage {layer_number:02d} Basislage",
             "partnumber": f"EU-Schnalle-backplate-layer-{layer_number:02d}",
             "stl": layer_stl,
-            "material_index": 0,
+            "material_index": material_for(layer_extruders, index, "Basislage"),
         }
     )
 
@@ -107,7 +125,7 @@ for index, strip_stl in enumerate(star_layer_strip_stls):
             "name": f"EU-Schnalle Lage 06 Streifen {strip_number:02d}",
             "partnumber": f"EU-Schnalle-backplate-layer-06-strip-{strip_number:02d}",
             "stl": strip_stl,
-            "material_index": 0,
+            "material_index": material_for(strip_extruders, index, "Streifen"),
         }
     )
 
@@ -120,13 +138,18 @@ for index, star_stl in enumerate(star_stls):
             "name": f"EU-Stern {label}",
             "partnumber": f"EU-Schnalle-backplate-star-{partnumber_label}-uhr",
             "stl": star_stl,
-            "material_index": 1,
+            "material_index": material_for(star_extruders, index, "Stern"),
         }
     )
 
+# 5-Farben-Palette (Reihenfolge = Extruder 1..5, entspricht extruder_colour
+# aus den manuell erstellten PrusaSlicer-Platten).
 materials = [
-    ("Volt Purple", "#502379FF"),
-    ("EU Star Yellow", "#FFCC00FF"),
+    ("Extruder 1", "#FFFF00FF"),  # Gelb
+    ("Extruder 2", "#90EE90FF"),  # Hellgruen
+    ("Extruder 3", "#FF0000FF"),  # Rot
+    ("Extruder 4", "#0000FFFF"),  # Blau
+    ("Extruder 5", "#800080FF"),  # Violett
 ]
 
 

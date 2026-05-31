@@ -58,9 +58,28 @@ Ablauf des Skripts:
 1. Rendert mit OpenSCAD einzelne STL-Teile (Basislagen, Stern-Streifen der
    Lage 06, sowie 12 Einzelsterne) über die `-D part="…"`-Parameter des `.scad`.
 2. Ein eingebettetes Python-Skript liest die ASCII-STLs und schreibt daraus ein
-   benanntes Multi-Material-`.3mf` (`EU-Schnalle-backplate.3mf`) mit zwei
-   Materialien: *Volt Purple* (`#502379`) und *EU Star Yellow* (`#FFCC00`).
+   benanntes Multi-Material-`.3mf` (`EU-Schnalle-backplate.3mf`).
 3. Temporäre STLs werden automatisch aufgeräumt.
+
+### Farben (5-Farben-Schema)
+
+Das `.3mf` definiert fünf 3MF-Basismaterialien in Extruder-Reihenfolge; die
+`displaycolor` entspricht der `extruder_colour` aus den manuell erstellten
+PrusaSlicer-Platten:
+
+| Material-Index | Extruder | Farbe |
+|---|---|---|
+| 0 | 1 | `#FFFF00` Gelb |
+| 1 | 2 | `#90EE90` Hellgrün |
+| 2 | 3 | `#FF0000` Rot |
+| 3 | 4 | `#0000FF` Blau |
+| 4 | 5 | `#800080` Violett |
+
+Die Zuordnung Teil → Extruder ist im Skript als `layer_extruders` /
+`strip_extruders` / `star_extruders` hinterlegt und reproduziert exakt die
+manuelle Einfärbung (5 Basislagen gestapelt, Lage 06 als 5-Farben-Streifen,
+12 Sterne einzeln). **Wird die Teilezahl im `.scad` geändert, müssen diese
+Listen mitgepflegt werden** (sonst greift der Fallback auf Material 0).
 
 Erwartetes Ergebnis: `EU-Schnalle-backplate.3mf` (~68 KB).
 
