@@ -1,5 +1,6 @@
 diameter = 37;
 height = 0.4;
+star_layer_height = height;  // Dicke der obersten Sternlage; Default = height
 plain_layer_count = 5;
 layer_index = 0; // [0:5]
 star_layer_strip_count = 10;
@@ -68,10 +69,10 @@ module plain_layer(index) {
         }
 }
 
-module layer_slot_cutouts() {
+module layer_slot_cutouts(slot_thickness = height) {
     for (y = [-slot_vertical_spacing / 2, slot_vertical_spacing / 2])
         translate([0, y, -eps])
-            linear_extrude(height = height + 2 * eps)
+            linear_extrude(height = slot_thickness + 2 * eps)
                 square([slot_width, slot_height], center = true);
 }
 
@@ -94,9 +95,9 @@ module star_layer() {
 
 module star_layer_core() {
     difference() {
-        cylinder(d = diameter, h = height);
+        cylinder(d = diameter, h = star_layer_height);
         star_ring_cutout();
-        layer_slot_cutouts();
+        layer_slot_cutouts(star_layer_height);
     }
 }
 
@@ -107,9 +108,9 @@ module star_layer_strip(index) {
     translate([0, 0, star_layer_z])
         intersection() {
             star_layer_core();
-            translate([strip_x_center, 0, height / 2])
+            translate([strip_x_center, 0, star_layer_height / 2])
                 cube(
-                    [star_layer_strip_width, diameter + 2 * eps, height + 2 * eps],
+                    [star_layer_strip_width, diameter + 2 * eps, star_layer_height + 2 * eps],
                     center = true
                 );
         }
@@ -135,9 +136,9 @@ module star_at_index(index, prism_height = height, z_offset = 0) {
 
 module star_insert(index) {
     difference() {
-        star_at_index(index, height, star_layer_z);
+        star_at_index(index, star_layer_height, star_layer_z);
         translate([0, 0, star_layer_z])
-            layer_slot_cutouts();
+            layer_slot_cutouts(star_layer_height);
     }
 }
 
@@ -148,7 +149,7 @@ module star_ring_insert() {
 
 module star_ring_cutout() {
     for (i = [0 : star_count - 1])
-        star_at_index(i, height + 2 * eps, -eps);
+        star_at_index(i, star_layer_height + 2 * eps, -eps);
 }
 
 if (part == "backplate") {

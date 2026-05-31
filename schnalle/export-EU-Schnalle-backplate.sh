@@ -9,6 +9,8 @@ scad_file="EU-Schnalle-backplate.scad"
 # Defaults entsprechen dem bisherigen Verhalten.
 layer_height="${1:-0.4}"
 output_3mf="${2:-EU-Schnalle-backplate.3mf}"
+# $3 = Dicke der obersten Sternlage; Default = Basis-Lagenhoehe (uniform).
+star_layer_height="${3:-$layer_height}"
 # Logo-Gravurtiefe an die Lagenhoehe koppeln, damit das Logo genau die
 # unterste Lage durchschneidet (unabhaengig von der Lagenhoehe).
 logo_engrave_depth="$layer_height"
@@ -45,7 +47,7 @@ layer_part_stls=()
 for ((i = 0; i < layer_count; i++)); do
     layer_number="$(printf "%02d" "$((i + 1))")"
     layer_part_stl="$tmpdir/layer-$layer_number.stl"
-    openscad -D 'part="layer"' -D "layer_index=$i" -D "height=$layer_height" -D "logo_engrave_depth=$logo_engrave_depth" -o "$layer_part_stl" "$scad_file"
+    openscad -D 'part="layer"' -D "layer_index=$i" -D "height=$layer_height" -D "star_layer_height=$star_layer_height" -D "logo_engrave_depth=$logo_engrave_depth" -o "$layer_part_stl" "$scad_file"
     layer_part_stls+=("$layer_part_stl")
 done
 
@@ -54,14 +56,14 @@ star_layer_strip_stls=()
 for ((i = 0; i < star_layer_strip_count; i++)); do
     strip_number="$(printf "%02d" "$((i + 1))")"
     strip_part_stl="$tmpdir/star-layer-strip-$strip_number.stl"
-    openscad -D 'part="star_layer_strip"' -D "star_layer_strip_index=$i" -D "height=$layer_height" -o "$strip_part_stl" "$scad_file"
+    openscad -D 'part="star_layer_strip"' -D "star_layer_strip_index=$i" -D "height=$layer_height" -D "star_layer_height=$star_layer_height" -o "$strip_part_stl" "$scad_file"
     star_layer_strip_stls+=("$strip_part_stl")
 done
 
 for ((i = 0; i < star_count; i++)); do
     star_number="$(printf "%02d" "$((i + 1))")"
     star_part_stl="$tmpdir/star-$star_number.stl"
-    openscad -D 'part="star_single"' -D "star_index=$i" -D "height=$layer_height" -o "$star_part_stl" "$scad_file"
+    openscad -D 'part="star_single"' -D "star_index=$i" -D "height=$layer_height" -D "star_layer_height=$star_layer_height" -o "$star_part_stl" "$scad_file"
     star_part_stls+=("$star_part_stl")
 done
 
