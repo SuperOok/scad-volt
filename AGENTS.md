@@ -1,110 +1,112 @@
 # AGENTS.md
 
-Hinweise für Agenten (Claude Code, GitHub Copilot, …), die in diesem Repository
-arbeiten. Bitte vor dem Bearbeiten von 3D-Modellen oder Exporten lesen.
+Notes for agents (Claude Code, GitHub Copilot, …) working in this repository.
+Please read before editing 3D models or exports.
 
-## Projektüberblick
+## Project overview
 
-`scad-volt` enthält parametrische 3D-Modelle (OpenSCAD), die zu druckbaren
-Multi-Material-`.3mf`-Dateien exportiert werden.
+`scad-volt` contains parametric 3D models (OpenSCAD) that are exported to
+printable multi-material `.3mf` files.
 
 ```
 .
-├── resources/                       # geteilte Assets (SVG-Logos etc.)
+├── resources/                       # shared assets (SVG logos etc.)
 │   ├── Logo_of_Volt.svg
 │   └── star-svgrepo-com.svg
-└── schnalle/                        # Modell "EU-Schnalle backplate"
-    ├── EU-Schnalle-backplate.scad   # parametrische Quelle
+└── schnalle/                        # model "EU-Schnalle backplate"
+    ├── EU-Schnalle-backplate.scad   # parametric source
     ├── export-EU-Schnalle-backplate.sh
-    └── *.3mf                        # exportierte Ergebnisse (eingecheckt)
+    └── *.3mf                        # exported results (checked in)
 ```
 
-## Voraussetzungen
+## Requirements
 
-- `openscad` (getestet mit 2021.01) — muss im `PATH` liegen
-- `python3` (getestet mit 3.12) — baut das `.3mf` aus den STL-Teilen zusammen
+- `openscad` (tested with 2021.01) — must be on the `PATH`
+- `python3` (tested with 3.12) — assembles the `.3mf` from the STL parts
 
-Das Export-Skript prüft beides und bricht mit klarer Meldung ab, wenn etwas fehlt.
+The export script checks both and aborts with a clear message if anything is
+missing.
 
-## Modell exportieren
+## Exporting the model
 
-Aus dem jeweiligen Modellordner heraus ausführen:
+Run from the respective model folder:
 
 ```bash
 cd schnalle
-./export-EU-Schnalle-backplate.sh                                  # Standard: 0,4 mm/Lage
-./export-EU-Schnalle-backplate.sh 0.2 EU-Schnalle-backplate-0.2mm.3mf  # uniform 0,2
-./export-EU-Schnalle-backplate.sh 0.2 EU-Schnalle-backplate-base0.2-stars0.4.3mf 0.4  # dünne Basis, dicke Sternlage
+./export-EU-Schnalle-backplate.sh                                  # default: 0.4 mm/layer
+./export-EU-Schnalle-backplate.sh 0.2 EU-Schnalle-backplate-0.2mm.3mf  # uniform 0.2
+./export-EU-Schnalle-backplate.sh 0.2 EU-Schnalle-backplate-base0.2-stars0.4.3mf 0.4  # thin base, thick star layer
 ```
 
-Das Skript nimmt drei optionale Argumente:
+The script takes three optional arguments:
 
-| Arg | Bedeutung | Default |
-|-----|-----------|---------|
-| `$1` | Basis-Lagenhöhe `height` in mm | `0.4` |
-| `$2` | Ausgabedatei | `EU-Schnalle-backplate.3mf` |
-| `$3` | Höhe der obersten Sternlage `star_layer_height` in mm | = `$1` (uniform) |
+| Arg | Meaning | Default |
+|-----|---------|---------|
+| `$1` | base layer height `height` in mm | `0.4` |
+| `$2` | output file | `EU-Schnalle-backplate.3mf` |
+| `$3` | height of the topmost star layer `star_layer_height` in mm | = `$1` (uniform) |
 
-Die Gesamtdicke ist `plain_layer_count * height + star_layer_height`, bei den 5
-Basislagen also ~2,4 mm (0,4/0,4), ~1,2 mm (0,2/0,2) oder ~1,4 mm (0,2/0,4).
-`star_layer_height` betrifft nur die oberste Lage mit den Streifen und Sternen;
-`height` die 5 gestapelten Basislagen. Durchmesser und Schlitzbreite bleiben über
-alle Varianten gleich; nur die Dicke wird über die Lagenhöhe variiert. Die
-Logo-Gravurtiefe `logo_engrave_depth` koppelt das Skript an `height`, damit das
-Logo unabhängig von der Lagenhöhe genau die unterste Lage durchschneidet.
+The total thickness is `plain_layer_count * height + star_layer_height`, so with
+the 5 base layers ~2.4 mm (0.4/0.4), ~1.2 mm (0.2/0.2) or ~1.4 mm (0.2/0.4).
+`star_layer_height` only affects the topmost layer with the stripes and stars;
+`height` affects the 5 stacked base layers. Diameter and slot width stay the same
+across all variants; only the thickness is varied via the layer height. The
+script couples the logo engraving depth `logo_engrave_depth` to `height`, so that
+the logo cuts through exactly the bottom layer regardless of the layer height.
 
-**Achtung Reload-from-disk:** Die kanonische `EU-Schnalle-backplate.3mf` (0,4 mm)
-nicht umbenennen — von Hand in PrusaSlicer abgeleitete Mehrfach-Platten
-referenzieren sie über diesen Dateinamen.
+**Caution, reload-from-disk:** Do not rename the canonical
+`EU-Schnalle-backplate.3mf` (0.4 mm) — multi-piece plates derived by hand in
+PrusaSlicer reference it via this file name.
 
-Ablauf des Skripts:
+Script flow:
 
-1. Rendert mit OpenSCAD einzelne STL-Teile (Basislagen, Stern-Streifen der
-   Lage 06, sowie 12 Einzelsterne) über die `-D part="…"`-Parameter des `.scad`.
-2. Ein eingebettetes Python-Skript liest die ASCII-STLs und schreibt daraus ein
-   benanntes Multi-Material-`.3mf` (`EU-Schnalle-backplate.3mf`).
-3. Temporäre STLs werden automatisch aufgeräumt.
+1. Renders individual STL parts with OpenSCAD (base layers, star stripes of
+   layer 06, and 12 individual stars) via the `-D part="…"` parameters of the
+   `.scad`.
+2. An embedded Python script reads the ASCII STLs and writes a named
+   multi-material `.3mf` (`EU-Schnalle-backplate.3mf`) from them.
+3. Temporary STLs are cleaned up automatically.
 
-### Farben (5-Farben-Schema)
+### Colors (5-color scheme)
 
-Das `.3mf` definiert fünf 3MF-Basismaterialien in Extruder-Reihenfolge; die
-`displaycolor` entspricht der `extruder_colour` aus den manuell erstellten
-PrusaSlicer-Platten:
+The `.3mf` defines five 3MF base materials in extruder order; the
+`displaycolor` matches the `extruder_colour` from the manually created
+PrusaSlicer plates:
 
-| Material-Index | Extruder | Farbe |
+| Material index | Extruder | Color |
 |---|---|---|
-| 0 | 1 | `#FFFF00` Gelb |
-| 1 | 2 | `#90EE90` Hellgrün |
-| 2 | 3 | `#FF0000` Rot |
-| 3 | 4 | `#0000FF` Blau |
-| 4 | 5 | `#800080` Violett |
+| 0 | 1 | `#FFFF00` yellow |
+| 1 | 2 | `#90EE90` light green |
+| 2 | 3 | `#FF0000` red |
+| 3 | 4 | `#0000FF` blue |
+| 4 | 5 | `#800080` violet |
 
-Die Zuordnung Teil → Extruder ist im Skript als `layer_extruders` /
-`strip_extruders` / `star_extruders` hinterlegt und reproduziert exakt die
-manuelle Einfärbung (5 Basislagen gestapelt, Lage 06 als 5-Farben-Streifen,
-12 Sterne einzeln). **Wird die Teilezahl im `.scad` geändert, müssen diese
-Listen mitgepflegt werden** (sonst greift der Fallback auf Material 0).
+The part → extruder assignment is stored in the script as `layer_extruders` /
+`strip_extruders` / `star_extruders` and reproduces the manual coloring exactly
+(5 base layers stacked, layer 06 as 5-color stripes, 12 stars individually).
+**If the number of parts is changed in the `.scad`, these lists must be kept in
+sync** (otherwise the fallback to material 0 kicks in).
 
-Erwartetes Ergebnis: `EU-Schnalle-backplate.3mf` (~68 KB).
+Expected result: `EU-Schnalle-backplate.3mf` (~68 KB).
 
-## Wichtige Stolpersteine
+## Important pitfalls
 
-- **SVG-Pfade prüfen.** Das `.scad` importiert das Volt-Logo über
-  `logo_file`, der Pfad ist **relativ zur `.scad`-Datei** und zeigt auf
-  `../resources/Logo_of_Volt.svg`. Liegt das SVG nicht dort, **bricht OpenSCAD
-  nicht hart ab**, sondern gibt nur `ERROR: Can't open file …` aus und rendert
-  die Lage ohne Logo weiter. Symptom: das `.3mf` ist auffällig klein (~34 KB
-  statt ~68 KB) und die Renderzeit der Basislage liegt im Millisekundenbereich
-  statt bei ~3 s.
-- **Skriptausgabe nicht blind vertrauen.** Wegen `set -euo pipefail` signalisiert
-  ein OpenSCAD-Importfehler keinen Exit-Code ≠ 0. Nach jedem Export auf
-  `ERROR`/`WARNING` in der Ausgabe **und** auf eine plausible Dateigröße achten.
-- **Stern-SVG wird nicht importiert.** `resources/star-svgrepo-com.svg` ist nur
-  Referenzmaterial; die Sterne werden im `.scad` geometrisch erzeugt.
+- **Check the SVG paths.** The `.scad` imports the Volt logo via `logo_file`;
+  the path is **relative to the `.scad` file** and points to
+  `../resources/Logo_of_Volt.svg`. If the SVG is not there, OpenSCAD **does not
+  fail hard** but only prints `ERROR: Can't open file …` and keeps rendering the
+  layer without the logo. Symptom: the `.3mf` is conspicuously small (~34 KB
+  instead of ~68 KB) and the render time of the base layer is in the
+  milliseconds range instead of ~3 s.
+- **Don't blindly trust the script output.** Because of `set -euo pipefail`, an
+  OpenSCAD import error does not signal a non-zero exit code. After every export,
+  watch for `ERROR`/`WARNING` in the output **and** for a plausible file size.
+- **The star SVG is not imported.** `resources/star-svgrepo-com.svg` is only
+  reference material; the stars are generated geometrically in the `.scad`.
 
-## Konventionen
+## Conventions
 
-- Exportierte `.3mf`-Dateien werden bewusst eingecheckt (direkt druckbar ohne
-  OpenSCAD). Nach Änderungen am Modell den Export neu erzeugen und mitcommiten.
-- Parameter (Maße, Lagenzahl, Sternzahl …) stehen oben im `.scad` und sollten
-  dort gepflegt werden, nicht im Export-Skript dupliziert werden.
+- Exported `.3mf` files are deliberately checked in (directly printable without
+  OpenSCAD). After changes to the model, regenerate the export and commit it too.
+- Parameters (dimensions, layer count, star count …) live at the top of the
+  `.scad` and should be maintained there, not duplicated in the export script.
