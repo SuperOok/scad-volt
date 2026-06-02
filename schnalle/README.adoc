@@ -1,13 +1,13 @@
-= EU-Schnalle – Pendant for a Bracelet or Necklace
+= EU-Schnalle – Medallion for a Bracelet or Necklace
 :toc:
 :toc-title: Contents
 :icons: font
 
-image::resources/IMG_1157.JPEG[EU-Schnalle pendants in various sizes and color variants with bands, 480]
+image::resources/IMG_1157.JPEG[EU-Schnalle medallions in various sizes and color variants with bands, 480]
 
 == What is it?
 
-The *EU-Schnalle* ("EU buckle") is a round, flat pendant (37 mm diameter) in
+The *EU-Schnalle* ("EU buckle") is a round, flat medallion (37 mm diameter) in
 the Volt look: a violet disc with a ring of *12 yellow stars* – inspired by the
 stars of the European flag. The *Volt logo* is recessed into the back.
 
@@ -109,7 +109,7 @@ distinction between plain *model exports* from OpenSCAD and already
 The model is designed for *5-color printing*, e.g. on the *Prusa XL*
 (model XL5IS) with a multi-tool head.
 
-image::resources/EU-Schnalle-plate-preview.png[Print plate with several pendants, 360]
+image::resources/EU-Schnalle-plate-preview.png[Print plate with several medallions, 360]
 
 [cols="1,2", frame=none, grid=rows]
 |===
@@ -132,7 +132,7 @@ image::resources/EU-Schnalle-plate-preview.png[Print plate with several pendants
 | 5 | Violet `#800080`      | Base disc (Volt violet)
 |===
 
-The pendant is built up from bottom to top: several *base layers*, then a
+The medallion is built up from bottom to top: several *base layers*, then a
 *star layer* with the 12-star ring. The print-ready PrusaSlicer projects
 (`…-XL-…`) already contain the finished color assignment for all layers,
 stripes and stars.
