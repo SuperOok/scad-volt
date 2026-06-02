@@ -145,6 +145,9 @@ Length as desired:
 * short band → *bracelet*
 * long band → *necklace*
 
+A suitable 15 mm rainbow band is available here:
+https://amzn.eu/d/05CeHnHg[Rainbow band (15 mm) on Amazon].
+
 == Customizing and re-exporting
 
 The geometry is defined parametrically in `EU-Schnalle-backplate.scad` and can
